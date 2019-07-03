@@ -15,10 +15,10 @@ help::
 
 
 ## platform selection
-## Several supported platforms are liste here. 
+## Several supported platforms are liste here.
 ## Or you can add other platfom and set PLATFORM variable to it
 
-PLATFORM := xilinx_aws-vu9p-f1-04261818_dynamic_5_0
+PLATFORM := $(AWS_PLATFORM)
 
 
 ## TARGET can be set as:
@@ -31,7 +31,7 @@ TARGET := sw_emu
 ## Please keep it unchanged.
 HOST_EXE := IDCT.exe
 XO_NAME := krnl_idct
-XCLBIN := krnl_idct.xclbin
+XCLBIN := krnl_idct_$(TARGET).xclbin
 
 SRC_REPO := ./src
 BUILD_DIR := ./build
@@ -60,7 +60,7 @@ CXXLDFLAGS += -lxilinxopencl -lpthread -lrt
 ## Kernel Compiler and Linker Flags
 
 XOCCFLAGS := -t $(TARGET)
-XOCCFLAGS += --platform $(PLATFORM) -R1 --save-temps 
+XOCCFLAGS += --platform $(PLATFORM) -R1 --save-temps
 XOCCFLAGS += --nk krnl_idct:1
 XOCCFLAGS += --temp_dir $(BUILD_DIR)
 XOCCFLAGS += --log_dir $(BUILD_DIR)
@@ -69,13 +69,13 @@ XOCCFLAGS += --sp krnl_idct_1.m_axi_gmem:bank0 --sp krnl_idct_1.m_axi_gmem1:bank
 
 ## Host Executable File Generation
 
-$(BUILD_DIR)/$(HOST_EXE): $(HOST_SRC_CPP) 
+$(BUILD_DIR)/$(HOST_EXE): $(HOST_SRC_CPP)
 	mkdir -p $(BUILD_DIR)
 	xcpp $(CXXFLAGS) $(CXXLDFLAGS) -o $@ $(HOST_SRC_CPP)
 
 ## Kernel XO and Xclbin File Generation
 
-$(BUILD_DIR)/$(XO_NAME).xo: $(KERNEL_SRC_CPP) 
+$(BUILD_DIR)/$(XO_NAME).xo: $(KERNEL_SRC_CPP)
 	mkdir -p $(BUILD_DIR)
 	xocc $(XOCCFLAGS) -c -k krnl_idct $(KERNEL_SRC_CPP) -o $@
 
@@ -101,7 +101,7 @@ build: $(BUILD_DIR)/$(HOST_EXE) $(BUILD_DIR)/$(XCLBIN) $(BUILD_DIR)/$(EMCONFIG_F
 ## build the design and then run host application
 
 run: build
-	cp sdaccel.ini $(BUILD_DIR);	
+	cp sdaccel.ini $(BUILD_DIR);
 ifeq ($(TARGET), hw)
 	cd $(BUILD_DIR) && unset XCL_EMULATION_MODE;    ./IDCT.exe  --kernel_name krnl_idct ./$(XCLBIN) ;
 else
@@ -112,4 +112,3 @@ endif
 
 clean:
 	rm -rf $(BUILD_DIR)/$(XCLBIN) $(BUILD_DIR)/$(HOST_EXE) $(BUILD_DIR)/$(EMCONFIG_FILE) $(BUILD_DIR)/$(XO_NAME).xo $(BUILD_DIR)/*.ltx $(BUILD_DIR)/*_$(TARGET).log $(BUILD_DIR)/xocc_*_$(TARGET)_* $(BUILD_DIR)/_x* $(BUILD_DIR)/*.info $(BUILD_DIR)/convolve_fpga_$(TARGET)* $(BUILD_DIR)/link $(BUILD_DIR)/reports/convolve_fpga_$(TARGET)
-

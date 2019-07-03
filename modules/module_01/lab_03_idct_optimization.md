@@ -4,10 +4,10 @@ This lab builds on the previous one ([Using XOCC command line flow to develop an
 
 Please note that although the entire lab is performed on an F1 instance, only the final step of this lab really needs to be run on F1. All the interactive development, profiling and optimization steps would normally be performed on-premise or on a cost-effective AWS EC2 instance such as C4. However, to avoid switching from C4 to F1 instances during this lab, all the steps are performed on the F1 instance.
 
-If you have closed the terminal window at the end of the previous lab, open a new one and go back to the project folder:
+If you have closed the terminal window at the end of the previous lab, open a new one and go back to the project source folder:
 
 ```bash
-cd ~/SDAccel-AWS-F1-Developer-Labs/modules/module_01/idct
+cd ~/SDAccel-AWS-F1-Developer-Labs/modules/module_01/idct/design/src
 ```
 
 ### Optimizing the IDCT kernel
@@ -32,6 +32,7 @@ Remember when we Looked at the **HLS Report**, we identified that the read, exec
 
 1. Clean the generated files before launching hardware emulation with updated source file.
 ```
+cd ..
 make clean
 ```
 1. Rerun hardware emulation.
